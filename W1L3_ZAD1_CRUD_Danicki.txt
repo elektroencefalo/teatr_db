@@ -1,0 +1,538 @@
+---- *******************************************************************************
+---- *                                        				                                   
+---- *       PROJEKTOWANIE BAZ DANYCH - LABORATORIUM 		 GRUPA: L1 		               
+---- *                                       					                                   
+---- *******************************************************************************
+---- * 																		     
+---- *   Nazwisko i imię:      Mirosław Danicki                                                    
+---- * 																		     
+---- *******************************************************************************
+---- * 																		     
+---- *   Nr indeksu:           95318                                          
+---- * 																		     
+---- *******************************************************************************
+---- *******************************************************************************
+---- * 																		     
+---- *   Temat projektu:       Teatr                                                  
+---- * 																		     
+---- *******************************************************************************
+--
+--
+--
+---- -------------------------------------------------------------------------------
+---- TWORZENIE STRUKTURY BAZY DANYCH                                            
+---- -------------------------------------------------------------------------------
+
+
+CREATE TABLE bilet (
+    id                           INTEGER NOT NULL,
+    cena                         FLOAT,
+    typ_biletu                   VARCHAR2(30),
+    miejsce                      INTEGER,
+    repertuar_id                 INTEGER NOT NULL,
+    repertuar_przedstawienie_id  INTEGER NOT NULL
+);
+
+ALTER TABLE bilet
+    ADD CONSTRAINT bilet_pk PRIMARY KEY ( id,
+                                          repertuar_id,
+                                          repertuar_przedstawienie_id );
+
+CREATE TABLE obsluga (
+    id            INTEGER NOT NULL,
+    pracownik_id  INTEGER NOT NULL,
+    stanowisko    VARCHAR2 (25)
+
+
+);
+
+ALTER TABLE obsluga ADD CONSTRAINT obsluga_pk PRIMARY KEY ( id );
+
+CREATE TABLE pracownik (
+    id        INTEGER NOT NULL,
+    imie      VARCHAR2(20),
+    nazwisko  VARCHAR2(25)
+);
+
+ALTER TABLE pracownik ADD CONSTRAINT pracownik_pk PRIMARY KEY ( id );
+
+CREATE TABLE przedstawienie (
+    id          INTEGER NOT NULL,
+    tytul       VARCHAR2(35) ,
+    obsluga_id  INTEGER NOT NULL,
+    rezyser_id  INTEGER NOT NULL
+);
+
+ALTER TABLE przedstawienie ADD CONSTRAINT przedstawienie_pk PRIMARY KEY ( id );
+
+CREATE TABLE repertuar (
+    id                 INTEGER NOT NULL,
+    data               DATE,
+    godzina            Varchar2(15),
+    przedstawienie_id  INTEGER NOT NULL
+);
+
+ALTER TABLE repertuar ADD CONSTRAINT repertuar_pk PRIMARY KEY ( id,
+                                                                przedstawienie_id );
+
+CREATE TABLE rezyser (
+    id        INTEGER NOT NULL,
+    imie      VARCHAR2(20),
+    nazwisko  VARCHAR2 (35)
+
+
+);
+
+ALTER TABLE rezyser ADD CONSTRAINT rezyser_pk PRIMARY KEY ( id );
+
+CREATE TABLE rola (
+    id                 INTEGER NOT NULL,
+    rola               VARCHAR2(20),
+    pracownik_id       INTEGER NOT NULL,
+    przedstawienie_id  INTEGER NOT NULL
+);
+
+ALTER TABLE rola
+    ADD CONSTRAINT rola_pk PRIMARY KEY ( id,
+                                         pracownik_id,
+                                         przedstawienie_id );
+
+CREATE TABLE sala (
+    id            INTEGER NOT NULL,
+    nazwa          Varchar2(10),
+    ilosc_miejsc  INTEGER
+);
+
+ALTER TABLE sala ADD CONSTRAINT sala_pk PRIMARY KEY ( id );
+
+CREATE TABLE SalaRepertuar (
+    repertuar_id                 INTEGER NOT NULL,
+    repertuar_przedstawienie_id  INTEGER NOT NULL,
+    sala_id                      INTEGER NOT NULL
+);
+
+ALTER TABLE SalaRepertuar
+    ADD CONSTRAINT SalaRepertuar_PK PRIMARY KEY ( repertuar_id,
+                                                     repertuar_przedstawienie_id,
+                                                     sala_id );
+
+CREATE TABLE umowy (
+    id            INTEGER NOT NULL,
+    stawka        VARCHAR2(20),
+    pracownik_id  INTEGER NOT NULL
+);
+
+ALTER TABLE umowy ADD CONSTRAINT umowy_pk PRIMARY KEY ( id );
+
+CREATE TABLE urlop (
+    id            INTEGER NOT NULL,
+    poczatek      DATE,
+    koniec        DATE,
+    pozostalo     INTEGER,
+    pracownik_id  INTEGER NOT NULL
+);
+
+CREATE TABLE showlist (
+    przedstawienie_id  INTEGER NOT NULL,
+    obsluga_id         INTEGER NOT NULL
+);
+
+ALTER TABLE showlist ADD CONSTRAINT showlist_pk PRIMARY KEY ( przedstawienie_id,
+                                                              obsluga_id );
+
+ALTER TABLE showlist
+    ADD CONSTRAINT showlist_obsluga_fk FOREIGN KEY ( obsluga_id )
+        REFERENCES obsluga ( id );
+
+ALTER TABLE showlist
+    ADD CONSTRAINT showlist_przedstawienie_fk FOREIGN KEY ( przedstawienie_id )
+        REFERENCES przedstawienie ( id );
+
+ALTER TABLE urlop ADD CONSTRAINT urlop_pk PRIMARY KEY ( id );
+
+ALTER TABLE bilet
+    ADD CONSTRAINT bilet_repertuar_fk FOREIGN KEY ( repertuar_id,
+                                                    repertuar_przedstawienie_id )
+        REFERENCES repertuar ( id,
+                               przedstawienie_id );
+
+ALTER TABLE obsluga
+    ADD CONSTRAINT obsluga_pracownik_fk FOREIGN KEY ( pracownik_id )
+        REFERENCES pracownik ( id );
+
+ALTER TABLE przedstawienie
+    ADD CONSTRAINT przedstawienie_obsluga_fk FOREIGN KEY ( obsluga_id )
+        REFERENCES obsluga ( id );
+
+ALTER TABLE przedstawienie
+    ADD CONSTRAINT przedstawienie_rezyser_fk FOREIGN KEY ( rezyser_id )
+        REFERENCES rezyser ( id );
+
+ALTER TABLE repertuar
+    ADD CONSTRAINT repertuar_przedstawienie_fk FOREIGN KEY ( przedstawienie_id )
+        REFERENCES przedstawienie ( id );
+
+ALTER TABLE rola
+    ADD CONSTRAINT rola_pracownik_fk FOREIGN KEY ( pracownik_id )
+        REFERENCES pracownik ( id );
+
+ALTER TABLE rola
+    ADD CONSTRAINT rola_przedstawienie_fk FOREIGN KEY ( przedstawienie_id )
+        REFERENCES przedstawienie ( id );
+
+ALTER TABLE SalaRepertuar
+    ADD CONSTRAINT SalaRepertuar_Repertuar_FK FOREIGN KEY ( repertuar_id,
+                                                               repertuar_przedstawienie_id )
+        REFERENCES repertuar ( id,
+                               przedstawienie_id );
+
+ALTER TABLE SalaRepertuar
+    ADD CONSTRAINT SalaRepertuar_Sala_FK FOREIGN KEY ( sala_id )
+        REFERENCES sala ( id );
+
+ALTER TABLE umowy
+    ADD CONSTRAINT umowy_pracownik_fk FOREIGN KEY ( pracownik_id )
+        REFERENCES pracownik ( id );
+
+ALTER TABLE urlop
+    ADD CONSTRAINT urlop_pracownik_fk FOREIGN KEY ( pracownik_id )
+        REFERENCES pracownik ( id );
+
+--
+CREATE SEQUENCE set_prac
+ start WITH 1
+ INCREMENT BY 1;  
+
+CREATE SEQUENCE set_przed
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+ CREATE SEQUENCE set_rezyser
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+ CREATE SEQUENCE set_obsluga
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+  CREATE SEQUENCE set_aktor
+ start WITH 1
+ INCREMENT BY 1;  
+  
+   CREATE SEQUENCE set_sala
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+   CREATE SEQUENCE set_reper
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+  CREATE SEQUENCE set_sala_reper
+ start WITH 1
+ INCREMENT BY 1;  
+ 
+    CREATE SEQUENCE set_umowy
+ start WITH 1
+ INCREMENT BY 1; 
+ 
+  CREATE SEQUENCE set_urlop
+ start WITH 1
+ INCREMENT BY 1;  
+
+ CREATE SEQUENCE set_bilet
+ start WITH 1
+ INCREMENT BY 1; 
+-- -------------------------------------------------------------------------------
+-- POLECENIA:   5 X INSERT  DO WSZYSTKICH TABEL                                               
+-- -------------------------------------------------------------------------------
+-- Insert Pracownik
+INSERT INTO Pracownik(id,imie,nazwisko)
+values(set_prac.nextval,'Tomek', 'Znany');
+
+INSERT INTO Pracownik(id,imie,nazwisko)
+values(set_prac.nextval,'Jan', 'Kowalski');
+
+INSERT INTO Pracownik(id,imie,nazwisko)
+values(set_prac.nextval,'Adam', 'Nieznany');
+
+INSERT INTO Pracownik(id,imie,nazwisko)
+values(set_prac.nextval,'Kamil', 'Szybki');
+
+INSERT INTO Pracownik(id,imie,nazwisko)
+values(set_prac.nextval,'Karol', 'Wolny');
+
+-- Insert Rezyser
+INSERT INTO Rezyser(id,imie,nazwisko)
+values(set_rezyser.nextval,'Tadeusz','Morcinek');
+
+INSERT INTO Rezyser(id,imie,nazwisko)
+values(set_rezyser.nextval,'Łukasz','Adamski');
+
+INSERT INTO Rezyser(id,imie,nazwisko)
+values(set_rezyser.nextval,'Marcin','Kajak');
+
+INSERT INTO Rezyser(id,imie,nazwisko)
+values(set_rezyser.nextval,'Ignacy','Mróz');
+
+INSERT INTO Rezyser(id,imie,nazwisko)
+values(set_rezyser.nextval,'Michal','Nowy');
+
+-- Insert Obsluga
+INSERT INTO Obsluga(id,pracownik_id,stanowisko)
+values(set_obsluga.nextval, 1,'Aktor');
+
+INSERT INTO Obsluga(id,pracownik_id,stanowisko)
+values(set_obsluga.nextval, 1,'Aktor');
+
+INSERT INTO Obsluga(id,pracownik_id,stanowisko)
+values(set_obsluga.nextval, 1,'Dekoracje');
+
+INSERT INTO Obsluga(id,pracownik_id,stanowisko)
+values(set_obsluga.nextval, 2,'Świato1');
+
+INSERT INTO Obsluga(id,pracownik_id,stanowisko)
+values(set_obsluga.nextval, 3,'Kamera1');
+
+-- Insert Przedstawienie
+INSERT INTO Przedstawienie(id,tytul,obsluga_id,rezyser_id )
+values(set_przed.nextval, 'Czerwony Kapturek',1,5);
+
+INSERT INTO Przedstawienie(id,tytul,obsluga_id,rezyser_id )
+values(set_przed.nextval, 'Hamlet',2,3);
+
+INSERT INTO Przedstawienie(id,tytul,obsluga_id,rezyser_id )
+values(set_przed.nextval, 'Kot w butach',3,4);
+
+INSERT INTO Przedstawienie(id,tytul,obsluga_id,rezyser_id )
+values(set_przed.nextval, 'Makbet',3,3);
+
+INSERT INTO Przedstawienie(id,tytul,obsluga_id,rezyser_id )
+values(set_przed.nextval, 'Dziady III',3,4);
+
+-- Insert Rola
+ INSERT INTO Rola(id,Rola,pracownik_id,przedstawienie_id)
+ values(set_aktor.nextval,'Wilk',1,1);
+ 
+INSERT INTO Rola(id,Rola,pracownik_id,przedstawienie_id)
+ values(set_aktor.nextval,'Król Hamlet',2,2);
+ 
+ INSERT INTO Rola(id,Rola,pracownik_id,przedstawienie_id)
+ values(set_aktor.nextval,'Kot w butach',2,3);
+ 
+INSERT INTO Rola(id,Rola,pracownik_id,przedstawienie_id)
+ values(set_aktor.nextval,'Dunkan',1,4);
+ 
+  INSERT INTO Rola(id,Rola,pracownik_id,przedstawienie_id)
+ values(set_aktor.nextval,'Konrad',1,5);
+ 
+ -- Insert Sala
+ INSERT INTO Sala(id,nazwa,ilosc_miejsc)
+ values(set_sala.nextval,'Sala 1',156);
+ 
+ INSERT INTO Sala(id,nazwa,ilosc_miejsc)
+ values(set_sala.nextval,'Sala 1A',176);
+ 
+ INSERT INTO Sala(id,nazwa,ilosc_miejsc)
+ values(set_sala.nextval,'Sala 1B',256);
+ 
+ INSERT INTO Sala(id,nazwa,ilosc_miejsc)
+ values(set_sala.nextval,'Sala 2',90);
+ 
+ INSERT INTO Sala(id,nazwa,ilosc_miejsc)
+ values(set_sala.nextval,'Sala 3',258);
+
+ -- Insert Repertuar
+ INSERT INTO Repertuar(id,data,godzina,przedstawienie_id)
+ values(set_reper.nextval,TO_DATE('12/01/2021', 'DD/MM/YYYY'),'13:30',1);
+ 
+  INSERT INTO Repertuar(id,data,godzina,przedstawienie_id)
+ values(set_reper.nextval,TO_DATE('15/03/2021', 'DD/MM/YYYY'),'15:00',1);
+ 
+ INSERT INTO Repertuar(id,data,godzina,przedstawienie_id)
+ values(set_reper.nextval,TO_DATE('11/03/2021', 'DD/MM/YYYY'),'19:20',3);
+ 
+ INSERT INTO Repertuar(id,data,godzina,przedstawienie_id)
+ values(set_reper.nextval,TO_DATE('21/05/2021', 'DD/MM/YYYY'),'16:35',4);
+ 
+ INSERT INTO Repertuar(id,data,godzina,przedstawienie_id)
+ values(set_reper.nextval,TO_DATE('09/03/2021', 'DD/MM/YYYY'),'20:00',5);
+ 
+  -- Insert SalaRepertuar
+  INSERT INTO SalaRepertuar(repertuar_id,repertuar_przedstawienie_id,sala_id)
+  values(set_sala_reper.nextval,1,2);
+  
+   INSERT INTO SalaRepertuar(repertuar_id,repertuar_przedstawienie_id,sala_id)
+  values(set_sala_reper.nextval,1,2);
+  
+   INSERT INTO SalaRepertuar(repertuar_id,repertuar_przedstawienie_id,sala_id)
+  values(set_sala_reper.nextval,3,4);
+  
+   INSERT INTO SalaRepertuar(repertuar_id,repertuar_przedstawienie_id,sala_id)
+  values(set_sala_reper.nextval,4,1);
+  
+   INSERT INTO SalaRepertuar(repertuar_id,repertuar_przedstawienie_id,sala_id)
+  values(set_sala_reper.nextval,5,4);
+  
+  -- Insert showlist
+  INSERT INTO ShowList(przedstawienie_id,obsluga_id)
+  values(1,4);
+  
+   INSERT INTO ShowList(przedstawienie_id,obsluga_id)
+  values(3,2);
+  
+   INSERT INTO ShowList(przedstawienie_id,obsluga_id)
+  values(4,5);
+  
+   INSERT INTO ShowList(przedstawienie_id,obsluga_id)
+  values(1,3);
+  
+   INSERT INTO ShowList(przedstawienie_id,obsluga_id)
+  values(4,3);
+  
+    -- Insert Umowy
+    INSERT INTO Umowy(id,stawka,pracownik_id)
+    values(set_umowy.nextval,3545.00,1);
+    
+    INSERT INTO Umowy(id,stawka,pracownik_id)
+    values(set_umowy.nextval,3750.00,2);
+    
+    INSERT INTO Umowy(id,stawka,pracownik_id)
+    values(set_umowy.nextval,3800.00,3);
+    
+    INSERT INTO Umowy(id,stawka,pracownik_id)
+    values(set_umowy.nextval,4200.00,4);
+    
+    INSERT INTO Umowy(id,stawka,pracownik_id)
+    values(set_umowy.nextval,4800.00,5);
+    
+ -- Insert Urlop
+ INSERT INTO Urlop(id,poczatek,koniec,pozostalo,pracownik_id)
+ values(set_urlop.nextval,TO_DATE('12/01/2021', 'DD/MM/YYYY'),TO_DATE('22/01/2021', 'DD/MM/YYYY'),5,1);
+ 
+ INSERT INTO Urlop(id,poczatek,koniec,pozostalo,pracownik_id)
+ values(set_urlop.nextval,TO_DATE('02/02/2021', 'DD/MM/YYYY'),TO_DATE('18/02/2021', 'DD/MM/YYYY'),6,2);
+ 
+ INSERT INTO Urlop(id,poczatek,koniec,pozostalo,pracownik_id)
+ values(set_urlop.nextval,TO_DATE('01/03/2021', 'DD/MM/YYYY'),TO_DATE('18/03/2021', 'DD/MM/YYYY'),5,3);
+ 
+ INSERT INTO Urlop(id,poczatek,koniec,pozostalo,pracownik_id)
+ values(set_urlop.nextval,TO_DATE('02/05/2021', 'DD/MM/YYYY'),TO_DATE('22/05/2021', 'DD/MM/YYYY'),1,4);
+ 
+ INSERT INTO Urlop(id,poczatek,koniec,pozostalo,pracownik_id)
+ values(set_urlop.nextval,TO_DATE('10/06/2021', 'DD/MM/YYYY'),TO_DATE('25/06/2021', 'DD/MM/YYYY'),7,5);
+
+-- Insert Urlop
+INSERT INTO Bilet(id,cena,typ_biletu,miejsce,repertuar_id,repertuar_przedstawienie_id)
+values(set_bilet.nextval,25.00,'ulgowy',25,1,1);
+
+INSERT INTO Bilet(id,cena,typ_biletu,miejsce,repertuar_id,repertuar_przedstawienie_id)
+values(set_bilet.nextval,25.00,'ulgowy',89,2,1);
+
+INSERT INTO Bilet(id,cena,typ_biletu,miejsce,repertuar_id,repertuar_przedstawienie_id)
+values(set_bilet.nextval,55.00,'normalny',67,3,3);
+
+INSERT INTO Bilet(id,cena,typ_biletu,miejsce,repertuar_id,repertuar_przedstawienie_id)
+values(set_bilet.nextval,45.50,'normalny',48,4,4);
+
+INSERT INTO Bilet(id,cena,typ_biletu,miejsce,repertuar_id,repertuar_przedstawienie_id)
+values(set_bilet.nextval,55.00,'normalny',52,5,5);
+
+-- -------------------------------------------------------------------------------
+-- POLECENIA:   3 X SELECT  ( PRZYKŁADY Z JOIN NA MIN. 3 TABELACH)                                                   
+-- -------------------------------------------------------------------------------
+
+Select Tytul, data, nazwa as sala, ilosc_miejsc from Przedstawienie
+inner join Repertuar on Repertuar.Przedstawienie_id = Przedstawienie.id
+ inner join SalaRepertuar on Salarepertuar.repertuar_id =  Repertuar.id
+  inner join Sala on Sala.id=Salarepertuar.Sala_id;
+
+
+ Select  imie, nazwisko, stawka, pozostalo AS dni_Urlopu  from Pracownik
+LEFT OUTER join Umowy on Pracownik.ID = Umowy.pracownik_id
+ join Urlop on Pracownik.id=Urlop.pracownik_id and Urlop.pozostalo>5;
+ 
+ Select  cena, typ_biletu, miejsce, tytul, data, godzina from Bilet
+  join Repertuar on Bilet.repertuar_id = Repertuar.id and Repertuar.godzina > '18.00'
+ join Przedstawienie on Bilet.repertuar_przedstawienie_id = Przedstawienie.id;
+
+
+
+
+-- -------------------------------------------------------------------------------
+-- POLECENIA:   3 X UPDATE  DO WSZYSTKICH TABEL                                                    
+-- -------------------------------------------------------------------------------
+select stawka from Umowy;
+
+Update Umowy 
+Set stawka = stawka+200.00
+Where stawka<3600;
+
+select stawka from Umowy;
+
+select cena, typ_biletu from Bilet;
+
+Update Bilet
+set cena = cena+5
+where typ_biletu='normalny';
+
+select cena, typ_biletu from Bilet;
+
+Select * from Repertuar;
+Update Repertuar
+set godzina = '18.50'
+where data ='21.03.11';
+
+Select * from Repertuar;
+-- -------------------------------------------------------------------------------
+-- POLECENIA:   3 X DELETE  DO WSZYSTKICH TABEL                                                    
+-- -------------------------------------------------------------------------------
+Select Przedstawienie.id,tytul,przedstawienie_id from Przedstawienie
+join Showlist on Przedstawienie.id=showlist.przedstawienie_id ;
+
+Delete from (
+select * from showlist join Przedstawienie on (showlist.przedstawienie_id=Przedstawienie.id)
+where showlist.przedstawienie_id =1 );
+
+Select Przedstawienie.id,tytul,przedstawienie_id from Przedstawienie
+join Showlist on Przedstawienie.id=showlist.przedstawienie_id ;
+
+Select * FROM Rezyser;
+Delete From Rezyser where id=1;
+Select * FROM Rezyser;
+
+Select id, ilosc_miejsc, sala_id FROM Sala 
+join SalaRepertuar on Sala.id=SalaRepertuar.sala_id;
+Delete from (
+select * from SalaRepertuar join Sala on (SalaRepertuar.Sala_id=Sala.id)
+where SalaRepertuar.Sala_id =1 );
+Delete From Sala Where id=1;
+Select id, ilosc_miejsc, sala_id FROM Sala 
+join SalaRepertuar on Sala.id=SalaRepertuar.sala_id;
+-- -------------------------------------------------------------------------------
+-- USUWANIE STRUKTURY BAZY DANYCH                                            
+-- -------------------------------------------------------------------------------
+
+DROP TABLE BILET CASCADE CONSTRAINTS Purge;
+DROP TABLE Obsluga CASCADE CONSTRAINTS Purge;
+DROP TABLE Pracownik CASCADE CONSTRAINTS Purge;
+DROP TABLE Przedstawienie CASCADE CONSTRAINTS Purge;
+DROP TABLE Repertuar CASCADE CONSTRAINTS Purge;
+DROP TABLE Rezyser CASCADE CONSTRAINTS Purge;
+DROP TABLE Rola CASCADE CONSTRAINTS Purge;
+DROP TABLE Sala CASCADE CONSTRAINTS Purge;
+DROP TABLE SalaRepertuar CASCADE CONSTRAINTS  Purge;
+DROP TABLE Umowy CASCADE CONSTRAINTS Purge;
+DROP TABLE Urlop CASCADE CONSTRAINTS Purge;
+DROP TABLE Showlist CASCADE CONSTRAINTS Purge;
+
+DROP sequence set_prac;
+DROP sequence set_przed;
+DROP sequence set_rezyser;
+DROP sequence set_obsluga;
+DROP sequence set_aktor;
+DROP sequence set_sala;
+DROP sequence set_reper;
+DROP sequence set_sala_reper;
+DROP sequence set_umowy;
+DROP sequence set_bilet;
+DROP sequence set_urlop;

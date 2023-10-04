@@ -1,0 +1,89 @@
+---- *******************************************************************************
+---- *                                        				                                   
+---- *       PROJEKTOWANIE BAZ DANYCH - LABORATORIUM 		 GRUPA: L1 		               
+---- *                                       					                                   
+---- *******************************************************************************
+---- * 																		     
+---- *   Nazwisko i imię:      Mirosław Danicki                                                    
+---- * 																		     
+---- *******************************************************************************
+---- * 																		     
+---- *   Nr indeksu:           95318                                          
+---- * 																		     
+---- *******************************************************************************
+---- *******************************************************************************
+---- * 																		     
+---- *   Temat projektu:       Teatr                                                  
+---- * 																		     
+---- *******************************************************************************
+--
+--
+--
+-- ===============================================================================
+--   Przygotuj polecenia tworzace poniższe indeksy, opisz cel ich użycia,
+--   a następnie podaj przykład polecenia SQL, które je wykorzysta
+-- ===============================================================================
+
+
+-- -------------------------------------------------------------------------------
+-- POLECENIE  A. (INDEKS ZŁOŻONY)
+-- -------------------------------------------------------------------------------
+-- Index złożony przyśpiesza wyszukiwanie rekordow spełniających warunek.
+-- W tym przypadku index nałożony na pola CENA. TYP_Biletu oraz MIEJSCE
+-- przyspieszy wyszukiwanie najczęściej pobieranych danych z tabeli Bilet
+-- -------------------------------------------------------------------------------
+
+ CREATE INDEX i_bilet ON BILET(CENA,TYP_BILETU,MIEJSCE);
+ CREATE INDEX i_bilet_typ ON BILET(TYP_BILETU);
+----------------------------------------------------------------------------------
+
+SELECT CENA,TYP_BILETU,MIEJSCE FROM BILET where CENA<40 and TYP_BILETU='ulgowy';
+----------------------------------------------------------------------------------
+drop index i_bilet;
+drop index i_bilet_typ;
+----------------------------------------------------------------------------------
+SELECT CENA,TYP_BILETU,MIEJSCE FROM BILET where CENA<40 and TYP_BILETU='ulgowy';
+
+--------------------------------------------------------------------------------------
+-- POLECENIE  B. (INDEKS FUNKCYJNY)
+-- -------------------------------------------------------------------------------
+-- Index funkcyjny założony jest na zapytanie w którym często używana jest funkcja mnożenia
+-- w tym wypadku na rekordzie STAWKA w tabeli UMOWY
+-- -------------------------------------------------------------------------------
+
+CREATE INDEX stawka_idx_fun ON UMOWY(STAWKA*1.2);
+----------------------------------------------------------------------------------
+SELECT * from UMOWY where STAWKA*1.2>2300;
+drop index stawka_idx_fun;
+----------------------------------------------------------------------------------
+SELECT * from UMOWY where STAWKA*1.2>2300;
+
+ -- -------------------------------------------------------------------------------
+-- POLECENIE  C. (INDEKS BITMAPOWY)
+-- -------------------------------------------------------------------------------
+-- Index bitmapowy łączący relację tytułu przedstawienia oraz jego reżysera
+-- -------------------------------------------------------------------------------
+
+CREATE BITMAP INDEX bit_index_tytul_p
+ON PRZEDSTAWIENIE(TYTUL)
+FROM PRZEDSTAWIENIE p, REZYSER r
+WHERE p.REZYSER_ID=r.ID;
+
+SELECT  TYTUL
+FROM PRZEDSTAWIENIE
+INNER JOIN REZYSER ON REZYSER_ID = PRZEDSTAWIENIE.REZYSER_ID
+WHERE  REZYSER.IMIE like 'A%' ;
+----------------------------------------------------------------------------------
+drop index bit_index_tytul_p;
+-- -------------------------------------------------------------------------------
+SELECT  TYTUL
+FROM PRZEDSTAWIENIE
+INNER JOIN REZYSER ON REZYSER_ID = PRZEDSTAWIENIE.REZYSER_ID
+WHERE  REZYSER.IMIE like 'A%' ;
+
+
+
+
+
+
+
